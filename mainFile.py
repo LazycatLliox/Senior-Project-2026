@@ -67,6 +67,7 @@ def level_up(experience_points, skill_points, character_class, skills, level):
         print("Congratulations! You've leveled up!")
         level += 1
         skill_points += 1
+        experience_points -= 10 * level
         print(f"You are now level {level} and have {skill_points} skill points.")
 
 
@@ -194,6 +195,206 @@ def game_loop():
                     level,
                 )
                 
+                print("After defeating the goblin, you continue walking through the forest and find a treasure chest! Do you want to open it? (yes/no)")
+                chest_choice = input().lower()
+                if chest_choice == "yes":
+                    print("You open the treasure chest and find some gold!")
+                    inventory.append("Gold")
+                    experience_points += 20
+                    print("You gain 20 experience points for finding the treasure!")
+                    experience_points, skill_points, level, skills = level_up(
+                        experience_points,
+                        skill_points,
+                        character_class,
+                        skills,
+                        level,
+                    )
+                    print(f"Your current inventory: {', '.join(inventory)}")
+
+                    print(f"Your current skills: {', '.join(skills)}")
+                    
+                    print("You continue your adventure through the forest..")
+                    print("You encounter a wild boar! Do you want to fight it? (yes/no)")
+                    boar_choice = input().lower()
+                    if boar_choice == "yes":
+                        print("You decide to fight the wild boar!")
+                        if character_class == "warrior":
+                            print("As a Warrior, you charge at the boar and defeat it, but not without taking some damage!")
+                            stats["health"] -= 10
+                            stats["stamina"] -= 5
+                            experience_points += 15
+                            print("You gain 15 experience points for defeating the wild boar!")
+                        elif character_class == "mage":
+                            print("As a Mage, you cast a powerful spell and defeat the wild boar!")
+                            stats["health"] -= 10
+                            stats["mana"] -= 5
+                            experience_points += 15
+                            print("You gain 15 experience points for defeating the wild boar!")
+                        elif character_class == "rogue":
+                            print("As a Rogue, you sneak up and strike the wild boar from behind, defeating it!")
+                            stats["health"] -= 10
+                            stats["stamina"] -= 5
+                            experience_points += 15
+                            print("You gain 15 experience points for defeating the wild boar!")
+                        else:
+                            print("You fight bravely and defeat the wild boar!")
+                            stats["health"] -= 20
+                            stats["stamina"] -= 10
+                            experience_points += 15
+                            print("You gain 15 experience points for defeating the wild boar!")
+
+                        experience_points, skill_points, level, skills = level_up(
+                            experience_points,
+                            skill_points,
+                            character_class,
+                            skills,
+                            level,
+                        )
+                        print("You continue your adventure through the forest..")
+                        print("You enconter a bard playing music! Do you want to listen to the bard? (yes/no)")
+                        bard_choice = input().lower()
+                        if bard_choice == "yes":
+                            print("You listen to the bard's music and feel inspired! You gain 10 experience points!")
+                            experience_points += 10
+                            experience_points, skill_points, level, skills = level_up(
+                                experience_points,
+                                skill_points,
+                                character_class,
+                                skills,
+                                level,
+                            )
+                            print("You continue your adventure through the forest..")
+                            print("You encounter a group of bandits! Do you want to fight them? (yes/no)")
+                            bandit_choice = input().lower()
+                            if bandit_choice == "yes":
+                                print("You decide to fight the bandits!")
+                                if character_class == "warrior":
+                                    print("As a Warrior, you charge at the bandits and defeat them, but not without taking some damage!")
+                                    stats["health"] -= 20
+                                    stats["stamina"] -= 10
+                                    experience_points += 30
+                                    print("You gain 30 experience points for defeating the bandits!")
+                                elif character_class == "mage":
+                                    print("As a Mage, you cast powerful spells and defeat the bandits!")
+                                    stats["health"] -= 20
+                                    stats["mana"] -= 10
+                                    experience_points += 30
+                                    print("You gain 30 experience points for defeating the bandits!")
+                                elif character_class == "rogue":
+                                    print("As a Rogue, you sneak up and strike the bandits from behind, defeating them!")
+                                    stats["health"] -= 20
+                                    stats["stamina"] -= 10
+                                    experience_points += 30
+                                    print("You gain 30 experience points for defeating the bandits!")
+                                else:
+                                    print("You fight bravely and defeat the bandits!")
+                                    stats["health"] -= 40
+                                    stats["stamina"] -= 20
+                                    experience_points += 30
+                                    print("You gain 30 experience points for defeating the bandits!")
+
+                                experience_points, skill_points, level, skills = level_up(
+                                    experience_points,
+                                    skill_points,
+                                    character_class,
+                                    skills,
+                                    level,
+                                )
+                                print("You continue your adventure through the forest..")
+                                print("You find a hidden cave! Do you want to explore it? (yes/no)")
+                                cave_choice = input().lower()
+                                if cave_choice == "yes":
+                                    print("You explore the hidden cave and find a rare artifact! You gain 50 experience points!")
+                                    inventory.append("Rare Artifact")
+                                    experience_points += 50
+                                    experience_points, skill_points, level, skills = level_up(
+                                        experience_points,
+                                        skill_points,
+                                        character_class,
+                                        skills,
+                                        level,
+                                    )
+                                    print("Do you want to use the rare artifact? (yes/no)")
+                                    rare_artifact_choice = input().lower()
+                                    if rare_artifact_choice == "yes":
+                                        print("You decide to use the rare artifact and gain a powerful new skill!")
+                                        if character_class == "warrior":
+                                            skills.append("Earthquake")
+                                            print("You have learned Earthquake!")
+                                        elif character_class == "mage":
+                                            skills.append("Time Warp")
+                                            print("You have learned Time Warp!")
+                                        elif character_class == "rogue":
+                                            skills.append("Shadow Clone")
+                                            print("You have learned Shadow Clone!")
+                                        print(f"Your current skills: {', '.join(skills)}")
+                                        print("You continue your adventure through the forest..")
+                                        print("You encounter a vampire! Do you want to fight it? (yes/no)")
+                                        vampire_choice = input().lower()
+                                        if vampire_choice == "yes":
+                                            print("You decide to fight the vampire!")
+                                            if character_class == "warrior":
+                                                print("As a Warrior, you charge at the vampire and defeat it, but not without taking some damage!")
+                                                stats["health"] -= 30
+                                                stats["stamina"] -= 20
+                                                experience_points += 50
+                                                print("You gain 50 experience points for defeating the vampire!")
+                                            elif character_class == "mage":
+                                                print("As a Mage, you cast powerful spells and defeat the vampire!")
+                                                stats["health"] -= 30
+                                                stats["mana"] -= 20
+                                                experience_points += 50
+                                                print("You gain 50 experience points for defeating the vampire!")
+                                            elif character_class == "rogue":
+                                                print("As a Rogue, you sneak up and strike the vampire from behind, defeating it!")
+                                                stats["health"] -= 30
+                                                stats["stamina"] -= 20
+                                                experience_points += 50
+                                                print("You gain 50 experience points for defeating the vampire!")
+                                            else:
+                                                print("You fight bravely and defeat the vampire!")
+                                                stats["health"] -= 60
+                                                stats["stamina"] -= 40
+                                                experience_points += 50
+                                                print("You gain 50 experience points for defeating the vampire!")
+
+                                            experience_points, skill_points, level, skills = level_up(
+                                                experience_points,
+                                                skill_points,
+                                                character_class,
+                                                skills,
+                                                level,
+                                            )
+                                            print("when you defeat the vampire, you find a stone mask in its lair! Do you want to take the stone mask? (yes/no)")
+                                            stone_mask_choice = input().lower()
+                                            if stone_mask_choice == "yes":
+                                                print("An enscription on the mask tells you that to gain the power of the stone mask you need to wear it on your face and soke the mask in blood. Do you want to wear the stone mask? (yes/no)")
+                                                wear_stone_mask_choice = input().lower()
+                                                if wear_stone_mask_choice == "yes":
+                                                    print("You wear the stone mask and soak it in blood, gaining the power of the stone mask! You gain 100 experience points but you become a vampire! You have also gained the skill 'Vampiric Bite'!")
+                                                    inventory.append("Stone Mask")
+                                                    experience_points += 100
+                                                    skills.append("Vampiric Bite")
+
+                                                    experience_points, skill_points, level, skills = level_up(
+                                                        experience_points,
+                                                        skill_points,
+                                                        character_class,
+                                                        skills,
+                                                        level,
+                                                    )
+
+                                                elif wear_stone_mask_choice == "no":
+                                                    print("You decide not to wear the stone mask.")
+
+                                        
+
+
+                                elif cave_choice == "no":
+                                    print("You decide not to explore the hidden cave.")
+
+                elif chest_choice == "no":
+                    print("You decide not to open the treasure chest.")
 
             elif fight_choice == "no":
                 print("You avoid the goblin.")
@@ -206,6 +407,7 @@ def game_loop():
                     experience_points += 20
                     print("You gain 20 experience points for finding the treasure!")
                     level_up(experience_points, skill_points, character_class, skills, level)
+
                     
                 elif chest_choice == "no":
                     print("You decide not to open the treasure chest.")
