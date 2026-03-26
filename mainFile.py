@@ -730,6 +730,7 @@ def game_loop():
                                                                 print("You continue your adventure through the forest as a powerful vampire, but the nearby towns and villages are now hostile towards you due to your attack on the villagers.")
                                                                 print("You run in to a man who is hear to hunt you down. Do to your attack on the villagers")
                                                                 print("he has found you and is trying to kill you. Do you want to fight the vampire hunter or run away? (fight/run/status)")
+                                                                hunters_choice = input("> ").lower().strip()
 
                                                                 if hunters_choice == "fight":
                                                                     print("You decide to fight the vampire hunter!")
