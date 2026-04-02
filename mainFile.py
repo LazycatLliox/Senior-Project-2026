@@ -1011,7 +1011,15 @@ def game_loop():
                                                 return
                                         elif vampire_choice == "no":
                                             print("You decide not to become a vampire and the vampire is offended by your decision and kills you!")
+                        
                                             return
+                        elif bard_choice == "no":
+                            print("You decide not listen to the bard's music this makes the bard mad and he hits you with his lute you take 10 damage because you didn't expect it")
+                            stats["Health"] -= 10
+                            if stats["Health"] <= 0:
+                                print("You have been killed by the bard's lute attack!")
+                                return
+                            print("")     
                 elif chest_choice == "no":
                     print("You decide not to open the treasure chest.")
 
