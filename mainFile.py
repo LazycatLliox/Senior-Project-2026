@@ -32,6 +32,7 @@ skill_effects = {
     "Shadow Clone": {"damage_dealt": 20, "cost": {"stamina": 15}},
     "Vampiric Bite": {"damage_dealt": 25, "cost": {"health": 10}},
     "Divine Smite": {"damage_dealt": 30, "cost": {"stamina": 20}},
+    "Sunlight Slash": {"damage_dealt": 25, "cost": {"mana": 15}}
 }
 
 def main():
@@ -1019,7 +1020,37 @@ def game_loop():
                             if stats["Health"] <= 0:
                                 print("You have been killed by the bard's lute attack!")
                                 return
-                            print("")     
+
+                            print("You continue wandering through the forest and come across a man in top hat who asks you if you want to learn how to fight vampires. Do you want to learn how to fight vampires from the man? (yes/no/status)")
+                            while True:
+                                fight_vampires_choice = input().lower().strip()
+                                if fight_vampires_choice == "status":
+                                    check_status(stats, max_health, max_mana, skills, inventory)
+                                    print("Do you want to learn how to fight vampires from the man? (yes/no/status)")
+                                elif fight_vampires_choice in ["yes", "no"]:
+                                    break
+                                else:
+                                    print("Please enter yes, no, or status.")
+                            if fight_vampires_choice == "yes":
+                                print("You decide to learn how to fight vampires from the man in the top hat. You gain a new skill called Sunlight Blast and you gain 20 experience points!")
+                                skills.append("Sunlight Blast")
+                                experience_points += 20
+                                experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                    experience_points,
+                                    skill_points,
+                                    character_class,
+                                    skills,
+                                    level,
+                                    stats,
+                                    max_health,
+                                    max_mana,
+                                    secondary_class,
+                                )
+
+                            if fight_vampires_choice == "no":
+                                print("You decide not to learn how to fight vampires from the man with the top hat")
+
+
                 elif chest_choice == "no":
                     print("You decide not to open the treasure chest.")
 
