@@ -32,7 +32,8 @@ skill_effects = {
     "Shadow Clone": {"damage_dealt": 20, "cost": {"stamina": 15}},
     "Vampiric Bite": {"damage_dealt": 25, "cost": {"health": 10}},
     "Divine Smite": {"damage_dealt": 30, "cost": {"stamina": 20}},
-    "Sunlight Slash": {"damage_dealt": 25, "cost": {"mana": 15}}
+    "Sunlight Slash": {"damage_dealt": 25, "cost": {"mana": 15}},
+    "Field of Flowers": {"damage_dealt": 0, "cost": {"mana": 20}}
 }
 
 def main():
@@ -80,7 +81,7 @@ def main():
         stats["strength"] += 2
         stats["intelligence"] -= 2
         stats["agility"] += 5
-    else:
+    else: 
         skills = []
         inventory = []
 
@@ -1046,6 +1047,43 @@ def game_loop():
                                     max_mana,
                                     secondary_class,
                                 )
+                                print("You start wandering around the forest and you come across a house it looks abandoned do you wish to explore inside? (yes/no /status)")
+                                while True:
+                                    explore_house_choice = input().lower().strip()
+                                    if explore_house_choice == "status":
+                                        check_status(stats, max_health, max_mana, skills, inventory)
+                                        print("Do you wish to explore inside? (yes/no/status)")
+                                    elif explore_house_choice in ["yes", "no"]:
+                                        break
+                                    else:
+                                        print("Please enter yes, no, or status.")
+                                if explore_house_choice == "yes":
+                                    print("You decide to explore the house and you find a old grimoire that contains a werid spell in it. Do you wish to read the grimoire? (yes/no/status)")
+                                    while True:
+                                        read_grimoire_choice = input().lower().strip()
+                                        if read_grimoire_choice == "status":
+                                            check_status(stats, max_health, max_mana, skills, inventory)
+                                            print("Do you wish to read the grimoire? (yes/no/status)")
+                                        elif read_grimoire_choice in ["yes", "no"]:
+                                            break
+                                        else:
+                                            print("Please enter yes, no, or status.")
+                                    if read_grimoire_choice == "yes":
+                                        print("You gain a new spell called Field of Flowers and you gain 20 experience points for reading the grimoire!")
+                                        skills.append("Field of Flowers")
+                                        experience_points += 20
+                                        experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                            experience_points,
+                                            skill_points,
+                                            character_class,
+                                            skills,
+                                            level,
+                                            stats,
+                                            max_health,
+                                            max_mana,
+                                            secondary_class,
+                                        )
+
 
                             if fight_vampires_choice == "no":
                                 print("You decide not to learn how to fight vampires from the man with the top hat")
