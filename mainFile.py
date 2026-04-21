@@ -33,7 +33,8 @@ skill_effects = {
     "Vampiric Bite": {"damage_dealt": 25, "cost": {"health": 10}},
     "Divine Smite": {"damage_dealt": 30, "cost": {"stamina": 20}},
     "Sunlight Slash": {"damage_dealt": 25, "cost": {"mana": 15}},
-    "Field of Flowers": {"damage_dealt": 0, "cost": {"mana": 20}}
+    "Field of Flowers": {"damage_dealt": 0, "cost": {"mana": 20}},
+    "Iron Skin": {"stats": {"health": 20}, "cost": {"stamina": 15}},
 }
 
 def main():
@@ -1083,6 +1084,71 @@ def game_loop():
                                             max_mana,
                                             secondary_class,
                                         )
+                                        print("You continue exploring the house and you find set of armor that is walking around own it's own! Do you wish to fight it! (yes/no/status)")
+                                        while True:
+                                            fight_armor_choice = input().lower().strip()
+                                            if fight_armor_choice == "status":
+                                                check_status(stats, max_health, max_mana, skills, inventory)
+                                                print("Do you wish to fight the living armor? (yes/no/status)")
+                                            elif fight_armor_choice in ["yes", "no"]:
+                                                break
+                                            else:
+                                                print("Please enter yes, no, or status.")
+                                            if fight_armor_choice == "yes":
+                                                print("You decide to fight the living armor.")
+                                                if perform_fight("Living Armor", 30, 10, 50, character_class, stats, skills, experience_points, max_health, inventory):
+                                                    return
+                                                experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                    experience_points,
+                                                    skill_points,
+                                                    character_class,
+                                                    skills,
+                                                    level,
+                                                    stats,
+                                                    max_health,
+                                                    max_mana,
+                                                    secondary_class,
+                                                )
+                                                print("After defeating the living armor the chestplate of the armor fused to your chest and you gain 30 experience points for defeating the living armor you also gain the skill iron skin!")
+                                                skills.append("Iron Skin")
+                                                experience_points += 30
+                                                experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                    experience_points,
+                                                    skill_points,
+                                                    character_class,
+                                                    skills,
+                                                    level,
+                                                    stats,
+                                                    max_health,
+                                                    max_mana,
+                                                    secondary_class,
+                                                )
+                                                print("You finsh exploring the house and you leave to continue your adventure through the forest and you come across a vampire and you walked right into it! Do you want to fight the vampire or bargin for mercy? (fight/bargin/status)")
+                                                while True:
+                                                    fight_choice = input().lower().strip()
+                                                    if fight_choice == "status":
+                                                        check_status(stats, max_health, max_mana, skills, inventory)
+                                                        print("Do you want to fight the vampire or bargin for mercy? (fight/bargin/status)")
+                                                    elif fight_choice in ["fight", "bargin"]:
+                                                        break
+                                                    else:
+                                                        print("Please enter fight, bargin, or status.")
+                                                if fight_choice == "fight":
+                                                    print("You decide to fight the vampire!")
+                                                    if perform_fight("vampire", 40, 20, 60, character_class, stats, skills, experience_points, max_health, inventory):
+                                                        return
+                                                    experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                        experience_points,
+                                                        skill_points,
+                                                        character_class,
+                                                        skills,
+                                                        level,
+                                                        stats,
+                                                        max_health,
+                                                        max_mana,
+                                                        secondary_class,
+                                                    )
+                                                    
 
 
                             if fight_vampires_choice == "no":
