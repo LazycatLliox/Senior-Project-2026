@@ -1019,10 +1019,8 @@ def game_loop():
                         elif bard_choice == "no":
                             print("You decide not listen to the bard's music this makes the bard mad and he hits you with his lute you take 10 damage because you didn't expect it")
                             stats["Health"] -= 10
-                            if stats["Health"] <= 0:
-                                print("You have been killed by the bard's lute attack!")
-                                return
-
+                            
+                            
                             print("You continue wandering through the forest and come across a man in top hat who asks you if you want to learn how to fight vampires. Do you want to learn how to fight vampires from the man? (yes/no/status)")
                             while True:
                                 fight_vampires_choice = input().lower().strip()
@@ -1148,7 +1146,120 @@ def game_loop():
                                                         max_mana,
                                                         secondary_class,
                                                     )
-                                                    
+                                                    print("After defeating the vampire you gain 40 experience points and the vampire drops a stone mask. You pick up the stone mask it feels cold to the touch and you can feel a strange power emanating from it. Do you want to wear the stone mask? (yes/no/status)")
+                                                    while True:
+                                                        wear_stone_mask_choice = input().lower().strip()
+                                                        if wear_stone_mask_choice == "status":
+                                                            check_status(stats, max_health, max_mana, skills, inventory)
+                                                            print("Do you want to wear the stone mask? (yes/no/status)")
+                                                        elif wear_stone_mask_choice in ["yes", "no"]:
+                                                            break
+                                                        else:
+                                                            print("Please enter yes, no, or status.")
+                                                    if wear_stone_mask_choice == "yes":
+                                                        print("You decide to wear the stone mask and as soon as you put it on you feel a surge of power coursing through your body! You gain 50 experience points but you become a vampire!")
+                                                        experience_points += 50
+                                                        experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                            experience_points,
+                                                            skill_points,
+                                                            character_class,
+                                                            skills,
+                                                            level,
+                                                            stats,
+                                                            max_health,
+                                                            max_mana,
+                                                            secondary_class,
+                                                        )
+                                                        print("You continue your adventure through the forest as a powerful vampire!")
+                                                        print("You come across a group of vampire hunters they sense you you must fight. Do you want to fight the vampire hunters or try to bargin with them? (fight/bargin/status)")
+                                                        while True:
+                                                            hunters_choice = input().lower().strip()
+                                                            if hunters_choice == "status":
+                                                                check_status(stats, max_health, max_mana, skills, inventory)
+                                                                print("Do you want to fight the vampire hunters or try to bargin with them? (fight/bargin/status)")
+                                                            elif hunters_choice in ["fight", "bargin"]:
+                                                                break
+                                                            else:
+                                                                print("Please enter fight, bargin, or status.")
+                                                        if hunters_choice == "fight":
+                                                            print("You decide to fight the vampire hunters!")
+                                                            if perform_fight("vampire hunters", 50, 30, 80, character_class, stats, skills, experience_points, max_health, inventory):
+                                                                return
+                                                            experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                                experience_points,
+                                                                skill_points,
+                                                                character_class,
+                                                                skills,
+                                                                level,
+                                                                stats,
+                                                                max_health,
+                                                                max_mana,
+                                                                secondary_class,
+                                                            )
+                                                            print("After defeating the vampire hunters you gain 50 experience points and you continue your adventure through the forest wondering if you made the right choice or not...")
+                                                            print("This is the end of the game, You Got the vampire ending congratulations!")
+                                                            return
+                                                        elif hunters_choice == "bargin":
+                                                            print("You try to bargin with the vampire hunters but they are not interested in talking and they attack you! You are killed in the fight!")
+                                                            return
+                                                    elif wear_stone_mask_choice == "no":
+                                                        print("You decide not to wear the stone mask and you continue your adventure through the forest wondering what would have happened if you wore the stone mask...")
+
+                                                        print("Then You come across a group of vampire hunters they sense the stone mask and ask you to hand it in. In exchange you can join them and help them deafeat the vampire lord. Do you want to join the vampire hunters and give them the stone mask? (yes/no/status)")
+                                                        while True:
+                                                            join_hunters_choice = input().lower().strip()
+                                                            if join_hunters_choice == "status":
+                                                                check_status(stats, max_health, max_mana, skills, inventory)
+                                                                print("Do you want to join the vampire hunters and give them the stone mask? (yes/no/status)")
+                                                            elif join_hunters_choice in ["yes", "no"]:
+                                                                break
+                                                            else:
+                                                                print("Please enter yes, no, or status.")
+                                                        if join_hunters_choice == "yes":
+                                                            print("You decide to join the vampire hunters and give them the stone mask. They are grateful for your help and they teach you how to fight vampires! You gain a new skill called Vampire Slayer and you gain 30 experience points for joining the vampire hunters!")
+                                                            skills.append("Vampire Slayer")
+                                                            experience_points += 30
+                                                            experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                                experience_points,
+                                                                skill_points,
+                                                                character_class,
+                                                                skills,
+                                                                level,
+                                                                stats,
+                                                                max_health,
+                                                                max_mana,
+                                                                secondary_class,
+                                                            )
+                                                            print("You continue your adventure through the forest with the vampire hunters and you come across a village it looks like they are being terrorized by a powerful vampire lord! Do you want to help the villagers fight the vampire lord? (yes/no/status)")
+                                                            while True:
+                                                                help_villagers_choice = input().lower().strip()
+                                                                if help_villagers_choice == "status":
+                                                                    check_status(stats, max_health, max_mana, skills, inventory)
+                                                                    print("Do you want to help the villagers fight the vampire lord? (yes/no/status)")
+                                                                elif help_villagers_choice in ["yes", "no"]:
+                                                                    break
+                                                                else:
+                                                                    print("Please enter yes, no, or status.")
+                                                            if help_villagers_choice == "yes":
+                                                                print("You help the villagers fight the vampire lord and after a tough battle you defeat the vampire lord and save the village! You gain 50 experience points for defeating the vampire lord!")
+                                                                experience_points += 50
+                                                                experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                                    experience_points,
+                                                                    skill_points,
+                                                                    character_class,
+                                                                    skills,
+                                                                    level,
+                                                                    stats,
+                                                                    max_health,
+                                                                    max_mana,
+                                                                    secondary_class,
+                                                                )
+                                                                print("This is the end of the game, You Got the hunter ending congratulations!")
+                                                                return
+                                                        if join_hunters_choice == "no":
+                                                            print("You decide not to join the vampire hunters and give them the stone mask. The vampire hunters are disappointed in your decision and they attack you for not giving up the stone mask you are killed in the fight!")
+                                                            return
+
 
 
                             if fight_vampires_choice == "no":
