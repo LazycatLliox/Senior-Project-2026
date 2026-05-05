@@ -35,6 +35,7 @@ skill_effects = {
     "Sunlight Slash": {"damage_dealt": 25, "cost": {"mana": 15}},
     "Field of Flowers": {"damage_dealt": 0, "cost": {"mana": 20}},
     "Iron Skin": {"stats": {"health": 20}, "cost": {"stamina": 15}},
+    "Moon Maiden's Blessing": {"health": 20, "cost": {"mana": 20}},
 }
 
 def main():
@@ -118,7 +119,7 @@ def check_status(stats, max_health, max_mana, skills, inventory):
         use = input().lower().strip()
         if use == "yes":
             print(f"Choose an item to use: {', '.join(inventory)}")
-            item = input().strip()
+            item = input().strip().lower()
             if item in inventory:
                 if item == "Health Potion":
                     use_health_potion(stats, inventory, max_health)
@@ -129,8 +130,14 @@ def check_status(stats, max_health, max_mana, skills, inventory):
                         stats["mana"] = min(stats["mana"] + restore, max_mana)
                         inventory.remove("Mana Potion")
                         print(f"You drink a mana potion and restore {stats['mana'] - old_mana} mana! Current mana: {stats['mana']}/{max_mana}")
-                    else:
-                        print("You have no mana potions!")
+                elif item == "Sunlight Amulet":
+                    if "Sunlight Amulet" in inventory:
+                        print("You use the Sunlight Amulet, granting you temporary protection from sunlight. You won't take damage from sunlight for the next 3 hours!")
+                elif item == "Robe of the moon goddess Iris":
+                    if "Robe of the moon goddess Iris" in inventory:
+                        print("You choose to put on the robes you feel a surge of magic power flow through you! Your max mana is increased!")
+                        max_mana += 20
+                             
                 else:
                     print(f"You can't use {item} right now.")
             else:
@@ -1020,7 +1027,6 @@ def game_loop():
                             print("You decide not listen to the bard's music this makes the bard mad and he hits you with his lute you take 10 damage because you didn't expect it")
                             stats["Health"] -= 10
                             
-                            
                             print("You continue wandering through the forest and come across a man in top hat who asks you if you want to learn how to fight vampires. Do you want to learn how to fight vampires from the man? (yes/no/status)")
                             while True:
                                 fight_vampires_choice = input().lower().strip()
@@ -1257,17 +1263,91 @@ def game_loop():
                                                                 print("This is the end of the game, You Got the hunter ending congratulations!")
                                                                 return
                                                         if join_hunters_choice == "no":
-                                                            print("You decide not to join the vampire hunters and give them the stone mask. The vampire hunters are disappointed in your decision and they attack you for not giving up the stone mask you are killed in the fight!")
+                                                            print("You decide not to join the vampire hunters and not give them the stone mask. The vampire hunters are disappointed in your decision and they attack you for not giving up the stone mask you are killed in the fight!")
                                                             return
 
 
 
                             if fight_vampires_choice == "no":
                                 print("You decide not to learn how to fight vampires from the man with the top hat")
+                                print("The man belives you are working for a vampire and he attacks you! You are killed in the fight!")
+                                return
 
 
-                elif chest_choice == "no":
+                if chest_choice == "no":
                     print("You decide not to open the treasure chest.")
+                    print("You start walking through the forest and cross across a shrine. The shrine is adorned with moon and star symbols it is radiating a calm aura. Do you want to pray at the shrine? (yes/no/status)")
+                    while True:
+                        shrine_choice = input().lower().strip()
+                        if shrine_choice == "status":
+                            check_status(stats, max_health, max_mana, skills, inventory)
+                            print("Do you want to pray at the shrine? (yes/no/status)")
+                        elif shrine_choice in ["yes", "no"]:
+                            break
+                        else:
+                            print("Please enter yes, no, or status.")
+                    if shrine_choice == "yes":
+                            print("You decide to pray to the shrine you feel a surge of energy begins to course through your body! You gain 20 experience points as well as a skill called Moon Maidens Blessing!")
+                            skills.append("Moon Maidens Blessing")
+                            experience_points += 20
+                            experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                experience_points,
+                                skill_points,
+                                character_class,
+                                skills,
+                                level,
+                                stats,
+                                max_health,
+                                max_mana,
+                                secondary_class,
+                            )
+                            print("While you are praying a group of people walk up to you they are adorened in purple and blue robes with gold stars dotted across the robes. They introduce themselves as the followers of the moon goddess and they are impressed by your devotion to the shrine. They offer to teach you more about the moon goddess and her powers. Do you wish to learn more about the moon goddess from her followers? (yes/no/status) ")
+                            while True:
+                                learn_moon_goddess_choice = input().lower().strip()
+                                if learn_moon_goddess_choice == "status":
+                                    check_status(stats, max_health, max_mana, skills, inventory)
+                                    print("Do you wish to learn more about the moon goddess from her followers? (yes/no/status) ")
+                                elif learn_moon_goddess_choice in ["yes", "no"]:
+                                    break
+                                else:
+                                    print("Please enter yes, no, or status.")
+                            if learn_moon_goddess_choice == "yes":
+                                print("You choose to learn more about the moon goddess from her followers. They tell you that moon goddess Iris, she watches over the night and the stars and she is a powerful deity who can blesses all who worship her. They ask you if you if you want to join them as a follower of the moon goddess? (yes/no/status)")
+                                while True:
+                                        join_followers_choice = input().lower().strip()
+                                        if join_followers_choice == "status":
+                                            check_status(stats, max_health, max_mana, skills, inventory)
+                                            print("Do you want to join them as a follower of the moon goddess? (yes/no/status)")
+                                        elif join_followers_choice in ["yes", "no"]:
+                                            break
+                                        else:
+                                            print("Please enter yes, no, or status.")
+                                if join_followers_choice == "yes":
+                                    print("You decide to join Iris's followers In return they give you a robe that the other followers are wearing. The robe is purple and blue and color and it has gold stars dotted across the robe. it also seams to radiate some kind of aura. A follower tells you that the robe will protect you from harm it also improve your magical prowess. You gain 30 experience points for becoming a follower of Iris!")
+                                    inventory.append("Robe of the Moon Goddess Iris")
+                                    experience_points += 30
+                                    experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                        experience_points,
+                                        skill_points,
+                                        character_class,
+                                        skills,
+                                        level,
+                                        stats,
+                                        max_health,
+                                        max_mana,
+                                        secondary_class,
+                                        )
+                                    
+                                if join_followers_choice == "no":
+                                    print("You decide not to join the followers of the moon goddess. The followers are disappointed in your decision and they attack you for not joining them! You are killed in the fight!")
+                                    return
+                            if learn_moon_goddess_choice == "no":
+                                print("You decide not to learn more about the moon goddess from her followers. The followers are disappointed in your decision and they attack you for not learning more about the moon goddess! You are killed in the fight!")
+                                return
+                    if shrine_choice == "no":
+                        print("You decide to keep wandering through the forest.")
+
+                            
 
             elif fight_choice == "no":
                 print("You avoid the goblin.")
