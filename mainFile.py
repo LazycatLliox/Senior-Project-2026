@@ -36,7 +36,17 @@ skill_effects = {
     "Field of Flowers": {"damage_dealt": 0, "cost": {"mana": 20}},
     "Iron Skin": {"stats": {"health": 20}, "cost": {"stamina": 15}},
     "Moon Maiden's Blessing": {"health": 20, "cost": {"mana": 20}},
+    "Moonlight Slash": {"damage_dealt" : 25, "cost": {"mana": 15}},
 }
+
+
+def safe_input(prompt=""):
+    try:
+        return input(prompt)
+    except EOFError:
+        print("\nNo input detected. Skipping selection.")
+        return ""
+
 
 def main():
     print("Welcome to the RPG game!")
@@ -227,43 +237,84 @@ def use_skill_in_combat(skills, stats, skill_effects):
 
 
 def perform_fight(enemy_name, base_damage_taken, base_stamina_cost, exp_reward, character_class, stats, skills, experience_points, max_health, inventory):
-    damage_dealt_bonus, damage_taken_modifier = use_skill_in_combat(skills, stats, skill_effects)
+    enemy_health = 20 + exp_reward * 2
+    enemy_attack = base_damage_taken
+    turn = 1
 
-    
-    if character_class == "warrior":
-        damage_taken = base_damage_taken + damage_taken_modifier
-        stamina_cost = base_stamina_cost
-        print(f"As a Warrior, you swing your sword and defeat the {enemy_name}, but not without taking some damage!")
-    elif character_class == "mage":
-        damage_taken = base_damage_taken + damage_taken_modifier
-        mana_cost = base_stamina_cost
-        print(f"As a Mage, you cast a powerful spell and defeat the {enemy_name}!")
-    elif character_class == "rogue":
-        damage_taken = base_damage_taken + damage_taken_modifier
-        stamina_cost = base_stamina_cost
-        print(f"As a Rogue, you sneak up and strike the {enemy_name} from behind, defeating it!")
-    else:
-        damage_taken = base_damage_taken * 2 + damage_taken_modifier
-        stamina_cost = base_stamina_cost * 2
-        print(f"You fight bravely and defeat the {enemy_name}!")
+    print(f"A {enemy_name} appears! Prepare for combat.")
+    while enemy_health > 0 and stats["health"] > 0:
+        print(f"\n-- Turn {turn} --")
+        print(f"{enemy_name} Health: {enemy_health}")
+        print(f"Player Health: {stats['health']}/{max_health} | Mana: {stats['mana']} | Stamina: {stats['stamina']}")
+        print("Choose your action: 1) Attack 2) Use Skill 3) Use Health Potion")
+        action = input("Action (1/2/3): ").strip()
 
-    if damage_dealt_bonus > 0:
-        print(f"Your skill dealt extra {damage_dealt_bonus} damage!")
+        damage_dealt = 0
+        damage_taken_modifier = 0
 
-    stats["health"] -= max(0, damage_taken)
-    if character_class == "mage":
-        stats["mana"] -= mana_cost
-    else:
-        stats["stamina"] -= stamina_cost
-    experience_points += exp_reward
-    print(f"You gain {exp_reward} experience points for defeating the {enemy_name}!")
+        if action == "1":
+            if character_class == "mage":
+                cost = base_stamina_cost
+                if stats["mana"] < cost:
+                    print("Not enough mana to attack. Choose another action.")
+                    continue
+                stats["mana"] -= cost
+                damage_dealt = stats["intelligence"] + 5
+                print(f"You cast a basic spell and deal {damage_dealt} damage.")
+            else:
+                cost = base_stamina_cost
+                if stats["stamina"] < cost:
+                    print("Not enough stamina to attack. Choose another action.")
+                    continue
+                stats["stamina"] -= cost
+                if character_class == "warrior":
+                    damage_dealt = stats["strength"] + 5
+                elif character_class == "rogue":
+                    damage_dealt = stats["agility"] + 5
+                else:
+                    damage_dealt = stats.get("strength", 5)
+                print(f"You attack and deal {damage_dealt} damage.")
+        elif action == "2":
+            damage_dealt, damage_taken_modifier = use_skill_in_combat(skills, stats, skill_effects)
+            if damage_dealt == 0 and damage_taken_modifier == 0:
+                print("You chose not to use a skill this turn.")
+        elif action == "3":
+            if "Health Potion" in inventory:
+                use_health_potion(stats, inventory, max_health)
+                turn += 1
+                if stats["health"] <= 0:
+                    return True
+                continue
+            else:
+                print("You have no health potions.")
+                continue
+        else:
+            print("Invalid action. Select 1, 2, or 3.")
+            continue
 
-    if stats["health"] <= 0:
-        print("Your health has dropped to zero. You have died!")
-        return True
+        if damage_dealt > 0:
+            enemy_health -= damage_dealt
+            print(f"You hit the {enemy_name} for {damage_dealt} damage.")
+
+        if enemy_health <= 0:
+            print(f"You have defeated the {enemy_name}!")
+            experience_points += exp_reward
+            print(f"You gain {exp_reward} experience points for defeating the {enemy_name}!")
+            break
+
+        enemy_damage = max(0, enemy_attack + damage_taken_modifier)
+        stats["health"] -= enemy_damage
+        print(f"The {enemy_name} attacks you for {enemy_damage} damage.")
+
+        if stats["health"] <= 0:
+            print("Your health has dropped to zero. You have died!")
+            return True
+
+        turn += 1
+
     if stats["health"] < max_health and "Health Potion" in inventory:
-        print(f"Your current health: {stats['health']}/{max_health}. Do you want to drink a health potion? (yes/no)")
-        potion_choice = input().lower()
+        print(f"After the fight, your current health is {stats['health']}/{max_health}. Do you want to drink a health potion? (yes/no)")
+        potion_choice = input().lower().strip()
         if potion_choice == "yes":
             use_health_potion(stats, inventory, max_health)
     return False
@@ -274,52 +325,56 @@ def level_up(experience_points, skill_points, character_class, skills, level, st
     warrior_skills = ["Lightning Strike", "Shield Bash", "Flame Slash", "Whirlwind Attack"]
     rogue_skills = ["Shadow Step", "Poison Blade", "Evasion", "Smoke Screen"]
 
-    if experience_points >= 10 * level:
-        print("Congratulations! You've leveled up!")
-        level += 1
-        skill_points += 1
-        experience_points -= 10 * level
-        print(f"You are now level {level} and have {skill_points} skill points.")
+    while True:
+        if experience_points >= 10 * level:
+            print("Congratulations! You've leveled up!")
+            level += 1
+            skill_points += 1
+            experience_points -= 10 * level
+            print(f"You are now level {level} and have {skill_points} skill points.")
 
-        # Stat increases
-        print("Your stats have increased!")
-        max_health += 10
-        max_mana += 10
-        stats["stamina"] += 5
-        print(f"Max health +10 (now {max_health})")
-        print(f"Max mana +10 (now {max_mana})")
-        print("Stamina +5")
-        print("You feel refreshed!")
-        old_health = stats["health"]
-        old_mana = stats["mana"]
-        old_stamina = stats["stamina"]
-        stats["health"] = min(stats["health"] + 20, max_health)
-        stats["mana"] = min(stats["mana"] + 20, max_mana)
-        stats["stamina"] += 10
-        print(f"Health restored by {stats['health'] - old_health} (now {stats['health']}/{max_health})")
-        print(f"Mana restored by {stats['mana'] - old_mana} (now {stats['mana']}/{max_mana})")
-        print(f"Stamina restored by {stats['stamina'] - old_stamina}")
+            # Stat increases
+            print("Your stats have increased!")
+            max_health += 10
+            max_mana += 10
+            stats["stamina"] += 5
+            print(f"Max health +10 (now {max_health})")
+            print(f"Max mana +10 (now {max_mana})")
+            print("Stamina +5")
+            print("You feel refreshed!")
+            old_health = stats["health"]
+            old_mana = stats["mana"]
+            old_stamina = stats["stamina"]
+            stats["health"] = min(stats["health"] + 20, max_health)
+            stats["mana"] = min(stats["mana"] + 20, max_mana)
+            stats["stamina"] += 10
+            print(f"Health restored by {stats['health'] - old_health} (now {stats['health']}/{max_health})")
+            print(f"Mana restored by {stats['mana'] - old_mana} (now {stats['mana']}/{max_mana})")
+            print(f"Stamina restored by {stats['stamina'] - old_stamina}")
 
-        primary_skills = {"warrior": warrior_skills, "mage": mage_skills, "rogue": rogue_skills}[character_class]
-        available = [s for s in primary_skills if s not in skills]
+            primary_skills = {"warrior": warrior_skills, "mage": mage_skills, "rogue": rogue_skills}[character_class]
+            available = [s for s in primary_skills if s not in skills]
 
-        if not available and secondary_class is None:
-            print("You have learned all skills from your primary class! Choose a secondary class to learn skills from: warrior, mage, rogue")
-            while True:
-                sec_choice = input().lower().strip()
-                if sec_choice in ["warrior", "mage", "rogue"] and sec_choice != character_class:
-                    secondary_class = sec_choice
-                    if secondary_class == "warrior":
-                        max_health += 20
-                    elif secondary_class == "mage":
-                        max_mana += 20
-                    elif secondary_class == "rogue":
-                        stats["stamina"] += 20
-                    print(f"You have chosen {sec_choice.title()} as your secondary class!")
-                    
-                    break
-                else:
-                    print("Invalid choice or same as primary class.")
+            if not available and secondary_class is None:
+                print("You have learned all skills from your primary class! Choose a secondary class to learn skills from: warrior, mage, rogue")
+                while True:
+                    sec_choice = safe_input().lower().strip()
+                    if sec_choice in ["warrior", "mage", "rogue"] and sec_choice != character_class:
+                        secondary_class = sec_choice
+                        if secondary_class == "warrior":
+                            max_health += 20
+                        elif secondary_class == "mage":
+                            max_mana += 20
+                        elif secondary_class == "rogue":
+                            stats["stamina"] += 20
+                        print(f"You have chosen {sec_choice.title()} as your secondary class!")
+                        
+                        break
+                    elif sec_choice == "":
+                        print("No input detected, continuing without choosing a secondary class.")
+                        break
+                    else:
+                        print("Invalid choice or same as primary class.")
 
         if secondary_class:
             sec_skills = {"warrior": warrior_skills, "mage": mage_skills, "rogue": rogue_skills}[secondary_class]
@@ -327,19 +382,20 @@ def level_up(experience_points, skill_points, character_class, skills, level, st
 
         if available:
             print(f"Choose a skill: {', '.join(s.lower() for s in available)}:")
-            choice = input().lower().strip()
+            choice = safe_input().lower().strip()
             matching = [s for s in available if s.lower() == choice]
             if matching:
                 skill = matching[0]
                 skills.append(skill)
                 skill_points -= 1
                 print(f"You have used 1 skill point to learn {skill}.")
+            elif choice == "":
+                print("No skill choice detected, skipping skill learning this level.")
             else:
                 print("Invalid skill choice.")
         else:
             print("No new skills available.")
-
-    return experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class
+            return experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class
 
 
 def game_loop():
@@ -1025,7 +1081,7 @@ def game_loop():
                                             return
                         elif bard_choice == "no":
                             print("You decide not listen to the bard's music this makes the bard mad and he hits you with his lute you take 10 damage because you didn't expect it")
-                            stats["Health"] -= 10
+                            stats["health"] -= 10
                             
                             print("You continue wandering through the forest and come across a man in top hat who asks you if you want to learn how to fight vampires. Do you want to learn how to fight vampires from the man? (yes/no/status)")
                             while True:
@@ -1337,7 +1393,86 @@ def game_loop():
                                         max_mana,
                                         secondary_class,
                                         )
-                                    
+                                    print("You now continue your adventure now as a follower of the moon goddess. You come across a group of bandits who are trying to rob a family. You here a voice in your head she tells you to help the family. (yes/status)")
+                                    while True:
+                                        help_family_choice = input().lower().strip()
+                                        if help_family_choice == "status":
+                                            check_status(stats, max_health, max_mana, skills, inventory)
+                                            print("You come across a group of bandits who are trying to rob a family. You here a voice in your head she tells you to help the family. (yes/status)")
+                                        elif help_family_choice in ["yes"]:
+                                            break
+                                        else:
+                                            print("Please enter yes or status.")
+                                    if help_family_choice == "yes":
+                                        print("You decide to help the family!")
+                                        if perform_fight("Bandits", 30, 10, 50, character_class, stats, skills, experience_points, max_health, inventory):
+                                            return
+                                        experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                            experience_points,
+                                            skill_points,
+                                            character_class,
+                                            skills,
+                                            level,
+                                            stats,
+                                            max_health,
+                                            max_mana,
+                                            secondary_class,
+                                        )
+                                        print("After defeating the bandits the family thanks you for your help and they tell you that they are also followers of the moon goddess and they are extreamly greatful for your help. They say that they will teach you a technique of the moon goddess called Moonlight Slash. You gain 30 experience points for learning the technique and you also gain the skill Moonlight Slash!")
+                                        skills.append("Moonlight Slash")
+                                        experience_points += 30
+                                        experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                            experience_points,
+                                            skill_points,
+                                            character_class,
+                                            skills,
+                                            level,
+                                            stats,
+                                            max_health,
+                                            max_mana,
+                                            secondary_class,
+                                        )
+                                        print("You continue your adventure. You see a cave in the distance and you sense a strong presence coming from that cave. Do you want to investigate the cave? (yes/no/status)")
+                                        while True:
+                                            cave_choice = input().lower().strip()
+                                            if cave_choice == "status":
+                                                check_status(stats, max_health, max_mana, skills, inventory)
+                                                print("Do you want to investigate the cave? (yes/no/status)")
+                                            elif cave_choice in ["yes", "no"]:
+                                                break
+                                            else:
+                                                print("Please enter yes, no, or status.")
+                                        if cave_choice == "yes":
+                                            print("inside the cave you find a powerful monster it is a giant spider that has been corrupted by dark magic. The spider is attackig a group of travelers. Yet again you here a voice in your head it tells you to help the travelers. Do you want to help the travelers fight the giant spider? (yes/status)")
+                                            while True:
+                                                help_travelers_choice = input().lower().strip()
+                                                if help_travelers_choice == "status":
+                                                    check_status(stats, max_health, max_mana, skills, inventory)
+                                                    print("inside the cave you find a powerful monster it is a giant spider that has been corrupted by dark magic. The spider is attackig a group of travelers. Yet again you here a voice in your head it tells you to help the travelers. Do you want to help the travelers fight the giant spider? (yes/status)")
+                                                elif help_travelers_choice in ["yes"]:
+                                                    break
+                                                else:
+                                                    print("Please enter yes or status.")
+                                            if help_travelers_choice == "yes":
+                                                print("You decide to help the travelers fight the giant spider!")
+                                                if perform_fight("Giant Spider", 55, 20, 70, character_class, stats, skills, experience_points, max_health, inventory):
+                                                    return
+                                                experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                                                    experience_points,
+                                                    skill_points,
+                                                    character_class,
+                                                    skills,
+                                                    level,
+                                                    stats,
+                                                    max_health,
+                                                    max_mana,
+                                                    secondary_class,
+                                                )
+                                                print("After defeating the giant spider the travelers ")
+                                                
+                                        if cave_choice == "no":
+                                            print("You decide not to investigate the cave and you continue your adventure through the forest.")
+                                                
                                 if join_followers_choice == "no":
                                     print("You decide not to join the followers of the moon goddess. The followers are disappointed in your decision and they attack you for not joining them! You are killed in the fight!")
                                     return
@@ -1388,7 +1523,19 @@ def game_loop():
                     print("Invalid choice. Please enter 'yes' or 'no'.")
         elif choice == "no":
             print("You decide to stay in the village.")
-            break
+            print("while in the village you come across a wise old man he gives you 1000 experience points this is for testing purposes.")
+            experience_points += 1000
+            experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class = level_up(
+                experience_points,
+                skill_points,
+                character_class,
+                skills,
+                level,
+                stats,
+                max_health,
+                max_mana,
+                secondary_class,
+            )
         else:
             print("Invalid choice. Please enter 'yes' or 'no'.")
 
