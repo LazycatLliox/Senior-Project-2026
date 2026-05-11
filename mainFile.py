@@ -259,7 +259,7 @@ def perform_fight(enemy_name, base_damage_taken, base_stamina_cost, exp_reward, 
                     print("Not enough mana to attack. Choose another action.")
                     continue
                 stats["mana"] -= cost
-                damage_dealt = stats["intelligence"] + 5
+                damage_dealt = stats["intelligence"] - 8
                 print(f"You cast a basic spell and deal {damage_dealt} damage.")
             else:
                 cost = base_stamina_cost
@@ -268,9 +268,9 @@ def perform_fight(enemy_name, base_damage_taken, base_stamina_cost, exp_reward, 
                     continue
                 stats["stamina"] -= cost
                 if character_class == "warrior":
-                    damage_dealt = stats["strength"] + 5
+                    damage_dealt = stats["strength"] - 8
                 elif character_class == "rogue":
-                    damage_dealt = stats["agility"] + 5
+                    damage_dealt = stats["agility"] - 8
                 else:
                     damage_dealt = stats.get("strength", 5)
                 print(f"You attack and deal {damage_dealt} damage.")
@@ -325,57 +325,55 @@ def level_up(experience_points, skill_points, character_class, skills, level, st
     warrior_skills = ["Lightning Strike", "Shield Bash", "Flame Slash", "Whirlwind Attack"]
     rogue_skills = ["Shadow Step", "Poison Blade", "Evasion", "Smoke Screen"]
 
-    while True:
-        if experience_points >= 10 * level:
-            print("Congratulations! You've leveled up!")
-            level += 1
-            skill_points += 1
-            experience_points -= 10 * level
-            print(f"You are now level {level} and have {skill_points} skill points.")
+    while experience_points >= 10 * level:
+        print("Congratulations! You've leveled up!")
+        level += 1
+        skill_points += 1
+        
+        print(f"You are now level {level} and have {skill_points} skill points.")
 
-            # Stat increases
-            print("Your stats have increased!")
-            max_health += 10
-            max_mana += 10
-            stats["stamina"] += 5
-            print(f"Max health +10 (now {max_health})")
-            print(f"Max mana +10 (now {max_mana})")
-            print("Stamina +5")
-            print("You feel refreshed!")
-            old_health = stats["health"]
-            old_mana = stats["mana"]
-            old_stamina = stats["stamina"]
-            stats["health"] = min(stats["health"] + 20, max_health)
-            stats["mana"] = min(stats["mana"] + 20, max_mana)
-            stats["stamina"] += 10
-            print(f"Health restored by {stats['health'] - old_health} (now {stats['health']}/{max_health})")
-            print(f"Mana restored by {stats['mana'] - old_mana} (now {stats['mana']}/{max_mana})")
-            print(f"Stamina restored by {stats['stamina'] - old_stamina}")
+        # Stat increases
+        print("Your stats have increased!")
+        max_health += 10
+        max_mana += 10
+        stats["stamina"] += 5
+        print(f"Max health +10 (now {max_health})")
+        print(f"Max mana +10 (now {max_mana})")
+        print("Stamina +5")
+        print("You feel refreshed!")
+        old_health = stats["health"]
+        old_mana = stats["mana"]
+        old_stamina = stats["stamina"]
+        stats["health"] = min(stats["health"] + 20, max_health)
+        stats["mana"] = min(stats["mana"] + 20, max_mana)
+        stats["stamina"] += 10
+        print(f"Health restored by {stats['health'] - old_health} (now {stats['health']}/{max_health})")
+        print(f"Mana restored by {stats['mana'] - old_mana} (now {stats['mana']}/{max_mana})")
+        print(f"Stamina restored by {stats['stamina'] - old_stamina}")
 
-            primary_skills = {"warrior": warrior_skills, "mage": mage_skills, "rogue": rogue_skills}[character_class]
-            available = [s for s in primary_skills if s not in skills]
+        primary_skills = {"warrior": warrior_skills, "mage": mage_skills, "rogue": rogue_skills}[character_class]
+        available = [s for s in primary_skills if s not in skills]
 
-            if not available and secondary_class is None:
-                print("You have learned all skills from your primary class! Choose a secondary class to learn skills from: warrior, mage, rogue")
-                while True:
-                    sec_choice = safe_input().lower().strip()
-                    if sec_choice in ["warrior", "mage", "rogue"] and sec_choice != character_class:
-                        secondary_class = sec_choice
-                        if secondary_class == "warrior":
-                            max_health += 20
-                        elif secondary_class == "mage":
-                            max_mana += 20
-                        elif secondary_class == "rogue":
-                            stats["stamina"] += 20
-                        print(f"You have chosen {sec_choice.title()} as your secondary class!")
-                        
-                        break
-                    elif sec_choice == "":
-                        print("No input detected, continuing without choosing a secondary class.")
-                        break
-                    else:
-                        print("Invalid choice or same as primary class.")
-
+        if not available and secondary_class is None:
+            print("You have learned all skills from your primary class! Choose a secondary class to learn skills from: warrior, mage, rogue")
+            while True:
+                sec_choice = safe_input().lower().strip()
+                if sec_choice in ["warrior", "mage", "rogue"] and sec_choice != character_class:
+                    secondary_class = sec_choice
+                    if secondary_class == "warrior":
+                        max_health += 20
+                    elif secondary_class == "mage":
+                        max_mana += 20
+                    elif secondary_class == "rogue":
+                        stats["stamina"] += 20
+                    print(f"You have chosen {sec_choice.title()} as your secondary class!")
+                    
+                    break
+                elif sec_choice == "":
+                    print("No input detected, continuing without choosing a secondary class.")
+                    break
+                else:
+                    print("Invalid choice or same as primary class.")
         if secondary_class:
             sec_skills = {"warrior": warrior_skills, "mage": mage_skills, "rogue": rogue_skills}[secondary_class]
             available.extend([s for s in sec_skills if s not in skills])
@@ -395,7 +393,8 @@ def level_up(experience_points, skill_points, character_class, skills, level, st
                 print("Invalid skill choice.")
         else:
             print("No new skills available.")
-            return experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class
+        experience_points -= 10 * level
+    return experience_points, skill_points, level, skills, stats, max_health, max_mana, secondary_class
 
 
 def game_loop():
