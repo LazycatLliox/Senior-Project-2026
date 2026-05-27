@@ -8,31 +8,31 @@ Atreyu Blum
 skill_effects = {
     "Sword Mastery": {"damage_dealt": 5, "cost": {"stamina": 5}},
     "Shield Block": {"damage_taken": -5, "cost": {"stamina": 5}},
-    "Berserk": {"damage_dealt": 10, "damage_taken": 5, "cost": {"stamina": 10}},
-    "Fireball": {"damage_dealt": 10, "cost": {"mana": 10}},
-    "Ice Shard": {"damage_dealt": 5, "damage_taken": -5, "cost": {"mana": 5}},
+    "Berserk": {"damage_dealt": 20, "cost": {"stamina": 10}},
+    "Fireball": {"damage_dealt": 20, "cost": {"mana": 10}},
+    "Ice Shard": {"damage_dealt": 10, "cost": {"mana": 5}},
     "Lightning Bolt": {"damage_dealt": 15, "cost": {"mana": 15}},
-    "Stealth": {"damage_dealt": 10, "cost": {"stamina": 5}},
-    "Backstab": {"damage_dealt": 15, "cost": {"stamina": 10}},
-    "Poison": {"damage_dealt": 5, "cost": {"stamina": 5}},
-    "Lightning Strike": {"damage_dealt": 20, "cost": {"stamina": 15}},
-    "Shield Bash": {"damage_dealt": 10, "damage_taken": -10, "cost": {"stamina": 10}},
-    "Flame Slash": {"damage_dealt": 15, "cost": {"stamina": 10}},
+    "Stealth": {"damage_dealt": 15, "cost": {"stamina": 5}},
+    "Backstab": {"damage_dealt": 20, "cost": {"stamina": 10}},
+    "Poison": {"damage_dealt": 10, "cost": {"stamina": 5}},
+    "Lightning Strike": {"damage_dealt": 20, "cost": {"stamina": 15}}, 
+    "Shield Bash": {"damage_dealt": 15, "damage_taken": -10, "cost": {"stamina": 10}},
+    "Flame Slash": {"damage_dealt": 20, "cost": {"stamina": 10}},
     "Whirlwind Attack": {"damage_dealt": 25, "cost": {"stamina": 20}},
     "Arcane Blast": {"damage_dealt": 20, "cost": {"mana": 15}},
-    "Frost Nova": {"damage_dealt": 10, "damage_taken": -10, "cost": {"mana": 10}},
+    "Frost Nova": {"damage_dealt": 20, "damage_taken": -10, "cost": {"mana": 10}},
     "Chain Lightning": {"damage_dealt": 25, "cost": {"mana": 20}},
     "Meteor Strike": {"damage_dealt": 30, "cost": {"mana": 25}},
-    "Shadow Step": {"damage_dealt": 15, "cost": {"stamina": 10}},
-    "Poison Blade": {"damage_dealt": 10, "cost": {"stamina": 5}},
+    "Shadow Step": {"damage_dealt": 25, "cost": {"stamina": 10}},
+    "Poison Blade": {"damage_dealt": 20, "cost": {"stamina": 5}},
     "Evasion": {"damage_taken": -15, "cost": {"stamina": 10}},
     "Smoke Screen": {"damage_taken": -10, "cost": {"stamina": 5}},
-    "Earthquake": {"damage_dealt": 30, "cost": {"stamina": 20}},
+    "Earthquake": {"damage_dealt": 35, "cost": {"stamina": 20}},
     "Time Warp": {"damage_taken": -20, "cost": {"mana": 20}},
-    "Shadow Clone": {"damage_dealt": 20, "cost": {"stamina": 15}},
+    "Shadow Clone": {"damage_dealt": 30, "cost": {"stamina": 15}},
     "Vampiric Bite": {"damage_dealt": 25, "cost": {"health": 10}},
-    "Divine Smite": {"damage_dealt": 30, "cost": {"stamina": 20}},
-    "Sunlight Slash": {"damage_dealt": 25, "cost": {"mana": 15}},
+    "Divine Smite": {"damage_dealt": 35, "cost": {"stamina": 20}},
+    "Sunlight Slash": {"damage_dealt": 30, "cost": {"mana": 15}},
     "Field of Flowers": {"damage_dealt": 0, "cost": {"mana": 20}},
     "Iron Skin": {"stats": {"health": 20}, "cost": {"stamina": 15}},
     "Moon Maiden's Blessing": {"health": 20, "cost": {"mana": 20}},
@@ -95,7 +95,7 @@ def main():
         stats["agility"] += 5
     else: 
         skills = []
-        inventory = []
+        inventory = []              
 
     max_health = stats["health"]
     max_mana = stats["mana"]
@@ -259,7 +259,7 @@ def perform_fight(enemy_name, base_damage_taken, base_stamina_cost, exp_reward, 
                     print("Not enough mana to attack. Choose another action.")
                     continue
                 stats["mana"] -= cost
-                damage_dealt = stats["intelligence"] - 8
+                damage_dealt = stats["intelligence"] - 6
                 print(f"You cast a basic spell and deal {damage_dealt} damage.")
             else:
                 cost = base_stamina_cost
@@ -268,9 +268,9 @@ def perform_fight(enemy_name, base_damage_taken, base_stamina_cost, exp_reward, 
                     continue
                 stats["stamina"] -= cost
                 if character_class == "warrior":
-                    damage_dealt = stats["strength"] - 8
+                    damage_dealt = stats["strength"] - 6
                 elif character_class == "rogue":
-                    damage_dealt = stats["agility"] - 8
+                    damage_dealt = stats["agility"] - 6
                 else:
                     damage_dealt = stats.get("strength", 5)
                 print(f"You attack and deal {damage_dealt} damage.")
