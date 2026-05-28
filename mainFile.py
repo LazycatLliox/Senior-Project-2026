@@ -113,6 +113,22 @@ def use_health_potion(stats, inventory, max_health):
     else:
         print("You have no health potions!")
 
+def use_mana_potion(stats, inventory, max_mana):
+    if "Mana Potion" in inventory:
+        restore = 50
+        old_mana = stats["mana"]
+        stats["mana"] = min(stats["mana"] + restore, max_mana)
+        inventory.remove("Mana Potion")
+        print(f"You drink a mana potion and restore {stats['mana'] - old_mana} mana! Current mana: {stats['mana']}/{max_mana}")
+    else:
+        print("You have no mana potions!")
+
+def use_sunlight_amulet(inventory):
+    if "Sunlight Amulet" in inventory:
+        print("You use the Sunlight Amulet, granting you temporary protection from sunlight. You won't take damage from sunlight for the next 3 hours!")
+        inventory.remove("Sunlight Amulet")
+
+    
 
 def check_status(stats, max_health, max_mana, skills, inventory):
     print(f"\n--- Character Status ---")
@@ -129,36 +145,34 @@ def check_status(stats, max_health, max_mana, skills, inventory):
         use = input().lower().strip()
         if use == "yes":
             print(f"Choose an item to use: {', '.join(inventory)}")
-            item = input().strip().lower()
-            if item in inventory:
-                if item == "Health Potion":
+            item_choice = input().strip()
+            item = item_choice.lower()
+            inventory_map = {inv_item.lower(): inv_item for inv_item in inventory}
+            if item in inventory_map:
+                actual_item = inventory_map[item]
+                if actual_item == "Health Potion":
                     use_health_potion(stats, inventory, max_health)
-                elif item == "Mana Potion":
-                    if "Mana Potion" in inventory:
-                        restore = 50
-                        old_mana = stats["mana"]
-                        stats["mana"] = min(stats["mana"] + restore, max_mana)
-                        inventory.remove("Mana Potion")
-                        print(f"You drink a mana potion and restore {stats['mana'] - old_mana} mana! Current mana: {stats['mana']}/{max_mana}")
-                elif item == "Sunlight Amulet":
-                    if "Sunlight Amulet" in inventory:
-                        print("You use the Sunlight Amulet, granting you temporary protection from sunlight. You won't take damage from sunlight for the next 3 hours!")
-                elif item == "Robe of the moon goddess Iris":
-                    if "Robe of the moon goddess Iris" in inventory:
-                        print("You choose to put on the robes you feel a surge of magic power flow through you! Your max mana is increased!")
-                        max_mana += 20
-                             
+                elif actual_item == "Mana Potion":
+                    use_mana_potion(stats, inventory, max_mana)
+                elif actual_item == "Sunlight Amulet":
+                    print("You use the Sunlight Amulet, granting you temporary protection from sunlight. You won't take damage from sunlight for the next 3 hours!")
+                    inventory.remove("Sunlight Amulet")
+                elif actual_item == "Robe of the Moon Goddess Iris":
+                    print("You choose to put on the robes you feel a surge of magic power flow through you! Your max mana is increased!")
+                    max_mana += 20
                 else:
-                    print(f"You can't use {item} right now.")
+                    print(f"You can't use {item_choice} right now.")
             else:
-                print("Invalid item.")
+                print(f"You don't have {item_choice}.")
+        else:
+            print("Invalid item.")
     else:
         print("Your inventory is empty.")
 
 
 def prompt_yes_no_status(prompt, check_status_callback):
     while True:
-        choice = input(prompt).lower().strip()
+        choice = safe_input(prompt).lower().strip()
         if choice == "status":
             check_status_callback()
             continue
@@ -167,14 +181,18 @@ def prompt_yes_no_status(prompt, check_status_callback):
         print("Please enter yes, no, or status.")
 
 
-def apply_vampire_sunlight(is_vampire, stats, max_health, period):
+def apply_vampire_sunlight(is_vampire, stats, max_health, period, inventory):
     if not is_vampire:
         return False
 
     if period == "day":
         damage = 8
-        print("Vampire weakness: daylight burns you for 8 health.")
-        stats["health"] -= damage
+        if "Sunlight Amulet" in inventory:
+            print("Your Sunlight Amulet protects you from the harmful effects of the sun, preventing damage this turn.")
+            inventory.remove("Sunlight Amulet")
+        else:
+            print("Vampire weakness: daylight burns you for 8 health.")
+            stats["health"] -= damage
     else:
         heal = min(5, max_health - stats["health"])
         if heal > 0:
@@ -237,7 +255,7 @@ def use_skill_in_combat(skills, stats, skill_effects):
 
 
 def perform_fight(enemy_name, base_damage_taken, base_stamina_cost, exp_reward, character_class, stats, skills, experience_points, max_health, inventory):
-    enemy_health = 20 + exp_reward * 2
+    enemy_health = 10 + exp_reward
     enemy_attack = base_damage_taken
     turn = 1
 
@@ -337,6 +355,12 @@ def level_up(experience_points, skill_points, character_class, skills, level, st
         max_health += 10
         max_mana += 10
         stats["stamina"] += 5
+        if character_class == "warrior":
+            stats["strength"] += 2
+        elif character_class == "mage":
+            stats["intelligence"] += 2
+        elif character_class == "rogue":
+            stats["agility"] += 2
         print(f"Max health +10 (now {max_health})")
         print(f"Max mana +10 (now {max_mana})")
         print("Stamina +5")
@@ -423,7 +447,7 @@ def game_loop():
         if choice == "yes":
             print("You venture into the forest...")
             period = advance_time(1)
-            if apply_vampire_sunlight(is_vampire, stats, max_health, period):
+            if apply_vampire_sunlight(is_vampire, stats, max_health, period, inventory):
                 return
             fight_choice = prompt_yes_no_status("You encounter a goblin! Do you want to fight it? (yes/no/status) ",
                                               lambda: check_status(stats, max_health, max_mana, skills, inventory))
